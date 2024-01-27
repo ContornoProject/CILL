@@ -30,6 +30,7 @@ Name: $(NAME)
 Version: 0.0
 Description: Nice
 Cflags: -I$${includedir}
+Requires: $(DEPS)
 Libs: -L$${libdir} -l$(NAME)
 endef
 

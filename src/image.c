@@ -18,6 +18,7 @@ CONTORNO_EXPORT unsigned int CILL_ImageChannelType_GetChannelCount(CILLImageChan
 
 void FreeImage(void *img) {
 	CILLImage* image;
+	puts("freeing image");
 	
 	image = (CILLImage*)img;
 	if (!image) {
