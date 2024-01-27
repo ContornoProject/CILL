@@ -4,6 +4,8 @@
 #ifndef CILL
 #define CILL
 
+#define CILL_IMAGE_TYPE "CILLIMAGEOBJECT"
+
 /* Image */
 typedef enum {
     CILL_IMAGE_DATA_TYPE_8BPP,

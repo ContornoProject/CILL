@@ -18,7 +18,6 @@ CONTORNO_EXPORT unsigned int CILL_ImageChannelType_GetChannelCount(CILLImageChan
 
 void FreeImage(void *img) {
 	CILLImage* image;
-	puts("freeing image");
 	
 	image = (CILLImage*)img;
 	if (!image) {
@@ -42,7 +41,7 @@ void FreeImage(void *img) {
 CONTORNO_EXPORT CILLImage* CILL_Image_Create(CILLImageChannelType channel_type, CILLImageDataType data_type, unsigned int width, unsigned int height) {
 	CILLImage* ret;
 	
-	ret = Contorno_MemoryManager_Malloc(NULL, sizeof(CILLImage));
+	ret = (CILLImage*)Contorno_Object_Create(CILL_IMAGE_TYPE, sizeof(CILLImage));
 	if (!ret) {
 		return NULL;
 	}	
