@@ -16,6 +16,28 @@ CONTORNO_EXPORT unsigned int CILL_ImageChannelType_GetChannelCount(CILLImageChan
 	}	
 }
 
+void FreeImage(void *img) {
+	CILLImage* image;
+	
+	image = (CILLImage*)img;
+	if (!image) {
+		return;
+	}
+	
+	switch (image->img_channel_type) {
+		case CILL_IMAGE_DATA_TYPE_8BPP:
+			Contorno_MemoryManager_Free(NULL, ((CILLImageData8BPP*)image->img_data)->data);
+			break;
+		case CILL_IMAGE_DATA_TYPE_FLOAT:
+			Contorno_MemoryManager_Free(NULL, ((CILLImageDataFloat*)image->img_data)->data);
+			break;
+	}		
+	Contorno_MemoryManager_Free(NULL, image->img_data);
+	Contorno_MemoryManager_Free(NULL, image);
+}
+
+
+
 CONTORNO_EXPORT CILLImage* CILL_Image_Create(CILLImageChannelType channel_type, CILLImageDataType data_type, unsigned int width, unsigned int height) {
 	CILLImage* ret;
 	
@@ -24,6 +46,7 @@ CONTORNO_EXPORT CILLImage* CILL_Image_Create(CILLImageChannelType channel_type, 
 		return NULL;
 	}	
 	
+	Contorno_RefCountable_SetFreeFunc((ContornoRefCountable*)ret, FreeImage);
 	ret->img_channel_type = channel_type;
 	ret->img_width = width;
 	ret->img_height = height;
@@ -52,9 +75,9 @@ CONTORNO_EXPORT CILLImage* CILL_Image_Create(CILLImageChannelType channel_type, 
 				return NULL;
 			}
 			break;
-		case CILL_IMAGE_CHANNEL_TYPE_RGBA:
+		case CILL_IMAGE_DATA_TYPE_FLOAT:
 			((CILLImageDataFloat*)ret->img_data)->data = Contorno_MemoryManager_Calloc(NULL, ret->img_data->data_size, sizeof(float));
-			if (!((CILLImageData8BPP*)ret->img_data)->data) {
+			if (!((CILLImageDataFloat*)ret->img_data)->data) {
 				Contorno_MemoryManager_Free(NULL, ret);
 				return NULL;
 			}
