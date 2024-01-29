@@ -6,6 +6,9 @@
 
 #define CILL_IMAGE_TYPE "CILLIMAGEOBJECT"
 
+/* Main */
+extern CONTORNO_EXPORT void CILL_Init();
+
 /* Image */
 typedef enum {
     CILL_IMAGE_DATA_TYPE_8BPP,
@@ -49,22 +52,37 @@ typedef struct {
 } CILLImage;
 
 extern CONTORNO_EXPORT unsigned int CILL_ImageChannelType_GetChannelCount(CILLImageChannelType channel_type);
+
 extern CONTORNO_EXPORT CILLImage* CILL_Image_Create(CILLImageChannelType channel_type, CILLImageDataType data_type, unsigned int width, unsigned int height);
+extern CONTORNO_EXPORT CILLImage* CILL_Image_LoadFromFilename(char* filename);
+extern CONTORNO_EXPORT void CILL_Image_Fill(CILLImage* image, CILLImageChannelType channel_type, CILLImageDataType data_type, unsigned int width, unsigned int height);
 
 /* Loader Interface */
-typedef void (*CILLLoadFunc)(FILE *);
-typedef void (*CILLSaveFunc)(FILE *);
-typedef char** (*CILLSupportedMimesDynamicFunc)(void);
+typedef CILLImage* (*CILLLoadFunc)(FILE *);
+typedef void (*CILLSaveFunc)(CILLImage *, FILE *);
+typedef void (*CILLInitFunc)(void);
+
+#define CILL_LOAD_FUNC_NAME "CillLoader_Load"
+#define CILL_SAVE_FUNC_NAME "CillLoader_Save"
+#define CILL_PROBE_FUNC_NAME "CillLoader_Probe"
+#define CILL_INIT_FUNC_NAME "CillLoader_Init"
+
+typedef struct {
+	char* mime;
+	char* extension;
+} CILLLoaderSupportedFT;
+typedef CILLLoaderSupportedFT** (*CILLProbeSupportedFTsFunc)(void);
 
 typedef struct {
 	ContornoObject;
 
 	/* public */
 	ContornoModule* loader_module;
-	char** loader_supported_mimes;
-	CILLSupportedMimesDynamicFunc loader_supported_mimes_dyn;
 	CILLLoadFunc loader_load_func;
 	CILLSaveFunc loader_save_func;
+	CILLInitFunc loader_init_func;
+	CILLProbeSupportedFTsFunc loader_probe_func;
+	CILLLoaderSupportedFT** loader_supported_fts;
 	
 	/* padding */
 	void *loader_pad_1;
